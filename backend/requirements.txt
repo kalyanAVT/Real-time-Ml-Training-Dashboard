@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+langchain
+openai
+python-dotenv
+websockets
+pydantic
+pandas
+torch
+torchvision
+transformers

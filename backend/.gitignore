@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.h5
+*.ckpt
+*.pt
+*.onnx
+*.egg-info/
+*.sqlite3
+*.db
+*.log
+*.env
+.env.*
+mlruns/
+# VSCode
+.vscode/
+# Pytest
+.pytest_cache/
+# Jupyter
+.ipynb_checkpoints/
+# Local
+*.local/
