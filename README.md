@@ -47,8 +47,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Directory READMEs
 
-- See `[backend/README.md](<backend/README.md>)` for backend details
-- See `[training-dashboard/README.md](<training-dashboard/README.md>)` for frontend details
+- See [backend/README.md](<backend/README.md>) for backend details
+- See [training-dashboard/README.md](<training-dashboard/README.md>) for frontend details
 
 ## .gitignore
 
@@ -59,7 +59,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - The backend and frontend must be started separately
 - The backend must have access to the dataset file path sent from the frontend
-- All training logic is in `[backend/trainer.py](<backend/trainer.py>)`
+- All training logic is in [backend/trainer.py](<backend/trainer.py>)
 
 ---
 
