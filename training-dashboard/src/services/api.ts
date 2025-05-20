@@ -130,6 +130,8 @@ export const TrainingAPI = {
   },
 
   updateConfig: async (config: Config) => {
+    console.log("Sending config to backend:", JSON.stringify(config, null, 2))
+
     const response = await fetch(`${API_BASE_URL}/config`, {
       method: "PUT",
       headers: {

@@ -3,7 +3,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from websocket_manager import WebSocketManager
 from trainer import train_model
-from fastapi import Request, Body
+from fastapi import Request, Body, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
 from agent.agent import TrainingAgent  # Import the rule-based agent
 from agent.agent_chat import router as agent_chat_router
@@ -93,11 +93,13 @@ async def agent_chat(request: Request):
 
 @app.get("/config")
 async def get_config():
+    print("Current CONFIG:", CONFIG)
     return CONFIG
 
 @app.put("/config")
 async def update_config(config: dict = Body(...)):
     CONFIG.update(config)
+    print("CONFIG updated to:", CONFIG)
     return {"success": True, "config": CONFIG}
 
 @app.websocket("/ws/agent")
@@ -145,25 +147,20 @@ def download_model(format: str = "pytorch"):
         return JSONResponse(status_code=404, content={"error": f"Model file not found for format '{format}'. Please train and export the model first."})
     return FileResponse(model_path, filename=filename, media_type="application/octet-stream")
 
-@app.post("/dataset-location")
-async def dataset_location(data: dict = Body(...)):
-    file_path = data.get("path")
-    name = data.get("name")
-    size = data.get("size")
-    file_type = data.get("type")
-    # If the file is not an absolute path, always resolve it relative to backend working directory
-    if file_path and not os.path.isabs(file_path):
-        abs_path = os.path.abspath(os.path.join(os.getcwd(), file_path))
-        file_path = abs_path
+@app.post("/upload-dataset")
+async def upload_dataset(file: UploadFile = File(...)):
+    # Save the uploaded file to a specific location
+    upload_dir = "dataset"
+    os.makedirs(upload_dir, exist_ok=True)
+    file_path = os.path.join(upload_dir, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+    # Update the config with the new dataset information
     CONFIG["dataset"] = {
-        "name": name or os.path.basename(file_path),
-        "path": file_path,
-        "type": file_type or "custom",
-        "size": size,
-        "format": file_type,
+        "name": file.filename,
+        "path": file.filename,
+        "type": "custom",
+        "size": file.size,
+        "format": file.content_type,
     }
-    return {"path": file_path}
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+    return {"path": file.filename}

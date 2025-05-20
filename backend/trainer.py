@@ -1,6 +1,7 @@
 import asyncio
 import random
 import os
+import sys
 from typing import List
 import pandas as pd  # Example: for CSV dataset loading
 from schemas import TrainingMetric
@@ -11,6 +12,7 @@ from transformers import BertForSequenceClassification, GPT2LMHeadModel, ViTForI
 import torch
 import torch.nn as nn
 import torch.optim as optim
+sys.path.append(os.path.abspath('..'))
 
 class TrainingAgent:
     def __init__(self):
@@ -146,7 +148,8 @@ async def train_model(ws_manager: WebSocketManager):
     if missing:
         print(f"ERROR: Missing required config values: {', '.join(missing)}. Please update /config to include these.")
         return
-    dataset_path = config['dataset']['path']
+    dataset_filename = config['dataset']['path']
+    dataset_path = os.path.normpath(os.path.join("../", dataset_filename))
     print(f"Loading dataset from: {dataset_path}")
     # Example: Load CSV dataset (customize for your data type)
     try:
