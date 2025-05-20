@@ -104,5 +104,4 @@ backend/*.pt
 backend/*.onnx
 backend/mlruns/
 # Ignore dataset files but keep the dataset folder
-dataset/*
-
+dataset/*.csv
