@@ -199,14 +199,18 @@ Your provided model name: '{}'
         return
     print(f"Selected model: {model.__class__.__name__}")
 
+    # Before training loop, send Idle status if no training is running
+    await ws_manager.send_metric(TrainingMetric(epoch=0, loss=0, accuracy=0, status="Idle"))
     for epoch in range(1, epochs + 1):
         if not getattr(main, 'TRAINING_RUNNING', True):
             print("Training stopped by user.")
+            # Send Idle status if stopped
+            await ws_manager.send_metric(TrainingMetric(epoch=epoch, loss=loss, accuracy=accuracy, status="Idle"))
             break
         # Dummy metric calculation (replace with your model's logic)
         loss = max(0, 0.5 - (epoch / (2 * epochs)) + random.uniform(-0.05, 0.05))
         accuracy = min(1, (epoch / epochs) + random.uniform(-0.05, 0.05))
-        metric = TrainingMetric(epoch=epoch, loss=loss, accuracy=accuracy)
+        metric = TrainingMetric(epoch=epoch, loss=loss, accuracy=accuracy, status="Ongoing")
         print(f"Epoch {epoch}: Loss = {loss:.4f}, Accuracy = {accuracy:.4f}")
         await ws_manager.send_metric(metric)
         print(f"Sent metric: {metric}")
@@ -216,6 +220,8 @@ Your provided model name: '{}'
             await ws_manager.send_agent_tip(tip["content"])
             print(f"Sent tip: {tip['content']}")
         await asyncio.sleep(0.5)  # Simulate training time
+    # After training loop, send Completed status
+    await ws_manager.send_metric(TrainingMetric(epoch=epochs, loss=loss, accuracy=accuracy, status="Completed"))
     print("Training complete!")
     # === Save model to Downloads folder ===
     downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
